@@ -1,15 +1,10 @@
-package services;
+package serviceadapters;
 
 import datamodels.LocationData;
 import org.json.JSONObject;
 import utils.RequestResponseHandler;
 
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-
-public class LocationService {
-
+public class LocationServiceAdapter {
     public String getPublicIPAddress() throws Exception {
         String ipServiceUrl = "https://api.ipify.org?format=json";
         String response = RequestResponseHandler.sendGetRequest(ipServiceUrl);
@@ -31,6 +26,4 @@ public class LocationService {
 
         return new LocationData(city, country, latitude, longitude);
     }
-
-
 }
