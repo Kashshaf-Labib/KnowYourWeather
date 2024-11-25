@@ -14,12 +14,12 @@ public class WeatherCacheManager {
 
     public WeatherData get(String key)
     {
-        WeatherCacheEntry entry=cache.get(key);
-        if(entry!=null && !entry.isExpired())
+        WeatherCacheEntry entry = cache.get(key);
+        if(entry != null && !entry.isExpired())
         {
             return entry.getWeatherData();
         }
-        if(entry!=null)
+        if(entry != null)
         {
             cache.remove(key);
         }

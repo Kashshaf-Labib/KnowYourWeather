@@ -30,7 +30,6 @@ public class OpenWeatherAdapter implements IWeatherService {
 
     private WeatherData fetchData(String url) throws Exception {
         String response = RequestResponseHandler.sendGetRequest(url);
-        System.out.println(response);
         JSONObject jsonObject = new JSONObject(response);
 
 

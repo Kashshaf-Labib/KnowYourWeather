@@ -1,32 +1,41 @@
 package proxyservice;
 
 import behaviours.IWeatherService;
+import datamodels.LocationData;
+import datamodels.WeatherCacheEntry;
 import datamodels.WeatherData;
 import serviceadapters.LocationServiceAdapter;
 import utils.WeatherCacheManager;
+import utils.WeatherServiceProviderManager;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WeatherServiceProxy implements IWeatherService {
-    private IWeatherService weatherService;
-    private WeatherCacheManager cacheManager;
+    private final WeatherServiceProviderManager serviceProviderManager;
+    private final WeatherCacheManager cacheManager;
 
-    public WeatherServiceProxy(IWeatherService weatherService)
+    public WeatherServiceProxy()
     {
-        this.weatherService=weatherService;
+        this.serviceProviderManager=new WeatherServiceProviderManager();
         this.cacheManager=new WeatherCacheManager();
     }
-
-
 
     @Override
     public WeatherData getWeatherDataByCity(String city) throws Exception {
         WeatherData weatherData=cacheManager.getByCity(city);
         if(weatherData!=null)
         {
+            System.out.println("Cache hit for city: "+city);
             return weatherData;
         }
-        weatherData=weatherService.getWeatherDataByCity(city);
+        System.out.println("Cache miss for city: "+city);
+
+        IWeatherService serviceProvider=serviceProviderManager.getAvailableProvider();
+        weatherData=serviceProvider.getWeatherDataByCity(city);
         cacheManager.putByCity(city,weatherData);
         return weatherData;
+
     }
 
     @Override
@@ -41,8 +50,15 @@ public class WeatherServiceProxy implements IWeatherService {
         {
             return weatherData;
         }
-        weatherData=weatherService.getWeatherDataByIP();
-        cacheManager.putByCoordinates(latitude,longitude,weatherData);
-        return weatherData;
+        try{
+            IWeatherService serviceProvider=serviceProviderManager.getAvailableProvider();
+            weatherData=serviceProvider.getWeatherDataByIP();
+            cacheManager.putByCoordinates(latitude,longitude,weatherData);
+            return weatherData;
+
+        }catch(Exception e){
+            throw new Exception("Too many requests. Please try again later after some time");
+        }
+
     }
 }
