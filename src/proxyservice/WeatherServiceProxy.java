@@ -26,10 +26,8 @@ public class WeatherServiceProxy implements IWeatherService {
         WeatherData weatherData=cacheManager.getByCity(city);
         if(weatherData!=null)
         {
-            System.out.println("Cache hit for city: "+city);
             return weatherData;
         }
-        System.out.println("Cache miss for city: "+city);
 
         IWeatherService serviceProvider=serviceProviderManager.getAvailableProvider();
         weatherData=serviceProvider.getWeatherDataByCity(city);
